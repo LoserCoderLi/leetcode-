@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode URL 提交</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Product+Sans&display=swap');
+
+        body {
+            margin: 0;
+            font-family: 'Product Sans', sans-serif;
+            background-color: #202124;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .logo img {
+            width: 300px;
+            height: auto;
+        }
+
+        .search-container {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            background-color: #303134;
+            border-radius: 50px;
+            width: 700px;
+            padding: 10px;
+            box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-container input[type="text"] {
+            width: calc(100% - 200px); /* Adjusted width to fit the icons and send button */
+            padding: 12px;
+            background-color: #303134;
+            border: none;
+            font-size: 18px;
+            color: #fff;
+            border-radius: 24px;
+            outline: none;
+        }
+
+        .search-container input[type="text"]::placeholder {
+            color: #e8eaed;
+        }
+
+        .search-container .custom-image img {
+            margin-left: 10px;
+            width: 48px;
+            height: 48px;
+        }
+
+        /* Submit button styling */
+        .submit-btn {
+            margin-left: 10px;
+            padding: 10px 24px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .submit-btn:hover {
+            background-color: #357ae8;
+        }
+
+        /* Overview button styling (similar to Baidu icon) */
+        .overview-btn {
+            margin-top: 20px;
+            background-color: #303134;
+            color: white;
+            border: none;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .overview-btn img {
+            width: 40px;  /* Smaller image size to match "百度一下" style */
+            height: 40px;
+            margin-bottom: 5px;
+        }
+
+        .overview-btn span {
+            font-size: 12px;  /* Smaller font size to match the style */
+            color: #b0b0b0; /* Match the text color as in the left example */
+        }
+
+        .overview-btn:hover {
+            background-color: #3c3f41;
+        }
+
+        .response {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .leetcode-note h1 {
+            font-size: 60px;
+            font-weight: bold;
+            color: white;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logo leetcode-note">
+        <h1>LeetCode 笔记</h1>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="url" placeholder="在 LeetCode 中输入需要插入的网址">
+        <div class="custom-image">
+            <img src="{{ url_for('static', filename='images/leetcode.jpg') }}" alt="Custom Image">
+        </div>
+        <button class="submit-btn" id="submit">发送</button>
+    </div>
+
+    <!-- Updated Overview button styled like Baidu icon -->
+    <button class="overview-btn" id="overview">
+        <img src="{{ url_for('static', filename='images/leetcode.jpg') }}" alt="Custom Image">
+        <span>总览</span>
+    </button>
+
+    <div class="response" id="response"></div>
+
+    <script>
+        document.getElementById('submit').addEventListener('click', function() {
+            const url = document.getElementById('url').value;
+
+            if (url.trim() === '') {
+                alert('请输入一个有效的URL');
+                return;
+            }
+
+            // 发送POST请求到Flask后端
+            fetch('/leetcode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `url=${encodeURIComponent(url)}` // Use backticks for template literals
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerText = `消息: ${data.message}, 时间: ${data.time}, URL: ${data.url}`; // Correct template literal usage
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        // Event listener for the overview button
+        document.getElementById('overview').addEventListener('click', function() {
+            window.location.href = '/leetcode/summery'; // Redirect to the summary page
+        });
+    </script>
+
+</body>
+</html>
